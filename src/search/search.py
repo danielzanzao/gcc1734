@@ -99,7 +99,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
 
@@ -110,15 +109,61 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
 
     print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))"""
+    
+def depthFirstSearch(problem):
+    """ DFS para encontrar um caminho até o objetivo."""
+    
+    from util import Stack
+
+    frontier = Stack()
+    frontier.push((problem.getStartState(), []))  
+
+    visited = set()  
+
+    while not frontier.isEmpty():
+        current_state, actions = frontier.pop()
+
+        if problem.isGoalState(current_state):
+            return actions
+
+        if current_state not in visited:
+            visited.add(current_state)
+
+            for successor, action, cost in problem.expand(current_state):
+                if successor not in visited:
+                    frontier.push((successor, actions + [action]))
+
+    return []
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue  # Usa a fila para gerenciar a fronteira
+
+    # Inicializa a fronteira com o estado inicial e o caminho vazio
+    frontier = Queue()
+    frontier.push((problem.getStartState(), []))  # (estado, ações para chegar ao estado)
+
+    visited = set()  # Conjunto para rastrear estados visitados
+
+    while not frontier.isEmpty():
+        current_state, actions = frontier.pop()
+
+        # Verifica se o estado atual é o objetivo
+        if problem.isGoalState(current_state):
+            return actions
+
+        # Se ainda não visitado, expande o estado
+        if current_state not in visited:
+            visited.add(current_state)
+
+            # Use expand para obter os sucessores
+            for successor, action, cost in problem.expand(current_state):
+                if successor not in visited:
+                    frontier.push((successor, actions + [action]))
+
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -129,8 +174,33 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue  # Usa fila de prioridade para gerenciar a fronteira
+
+    # Inicializa a fronteira com o estado inicial, caminho vazio, e custo acumulado
+    frontier = PriorityQueue()
+    start_state = problem.getStartState()
+    frontier.push((start_state, [], 0), heuristic(start_state, problem))
+
+    visited = {}  # Dicionário para rastrear estados visitados e o menor custo
+
+    while not frontier.isEmpty():
+        current_state, actions, g_cost = frontier.pop()
+
+        # Verifica se é o estado objetivo
+        if problem.isGoalState(current_state):
+            return actions
+
+        # Checa se o estado já foi expandido com menor custo
+        if current_state not in visited or g_cost < visited[current_state]:
+            visited[current_state] = g_cost
+
+            # Expande os sucessores do estado atual
+            for successor, action, step_cost in problem.expand(current_state):
+                new_cost = g_cost + step_cost
+                total_cost = new_cost + heuristic(successor, problem)
+                frontier.push((successor, actions + [action], new_cost), total_cost)
+
+    return []
 
 
 # Abbreviations
