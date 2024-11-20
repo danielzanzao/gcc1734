@@ -10,7 +10,7 @@ class TwoJarsState:
     This class represents a configuration of the two jars.
     """
 
-    def __init__( self, volumes ):
+    def __init__(self, volumes):
         """
           Constructs a new configuration.
 
@@ -22,13 +22,11 @@ class TwoJarsState:
         assert (self.jars["J4"] >= 0 and self.jars["J4"] <= 4)
         assert (self.jars["J3"] >= 0 and self.jars["J3"] <= 3)
 
-    def isGoal( self ):
+    def isGoal(self):
         """
-          Checks to see if the pair of jars is in its goal state.
+        Checks to see if the pair of jars is in its goal state.
 
-            ---------
-            | 2 | * |
-            ---------
+        The goal is to have 2 liters in the 4-liter jar.
 
         >>> TwoJarsState((2, 1)).isGoal()
         True
@@ -39,20 +37,19 @@ class TwoJarsState:
         >>> TwoJarsState((1, 0)).isGoal()
         False
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.jars["J4"] == 2
 
-    def legalMoves( self ):
+    def legalMoves(self):
         """
-          Returns a list of legal actions from the current state.
+        Returns a list of legal actions from the current state.
 
         Actions consist of the following:
-        - fillJ3 (encher J3)
-        - fillJ4 (encher J4)
-        - pourJ3intoJ4 (despejar J3 em J4)
-        - pourJ4intoJ3 (despejar J4 em J3)
-        - emptyJ3 (esvaziar J3)
-        - emptyJ4 (esvaziar 43)
+        - fillJ3 (fill 3-liter jar)
+        - fillJ4 (fill 4-liter jar)
+        - pourJ3intoJ4 (pour from 3-liter jar into 4-liter jar)
+        - pourJ4intoJ3 (pour from 4-liter jar into 3-liter jar)
+        - emptyJ3 (empty 3-liter jar)
+        - emptyJ4 (empty 4-liter jar)
         
         These are encoded as strings: 'fillJ3', 'fillJ4', 
         'pourJ3intoJ4', 'pourJ4intoJ3', 'emptyJ3', 'emptyJ4'.
@@ -60,48 +57,78 @@ class TwoJarsState:
         >>> TwoJarsState((1, 3)).legalMoves()
         ['fillJ4', 'pourJ3intoJ4', 'emptyJ3', 'emptyJ4']
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        moves = []
+
+        if self.jars["J4"] < 4:  # Can fill J4
+            moves.append("fillJ4")
+        if self.jars["J3"] < 3:  # Can fill J3
+            moves.append("fillJ3")
+        if self.jars["J3"] > 0:  # Can pour J3 into J4
+            moves.append("pourJ3intoJ4")
+        if self.jars["J4"] > 0:  # Can pour J4 into J3
+            moves.append("pourJ4intoJ3")
+        if self.jars["J3"] > 0:  # Can empty J3
+            moves.append("emptyJ3")
+        if self.jars["J4"] > 0:  # Can empty J4
+            moves.append("emptyJ4")
+
+        return moves
 
     def result(self, move):
         """
-          Returns an object TwoJarsState with the current state based on the provided move.
+        Returns an object TwoJarsState with the current state based on the provided move.
 
         The move should be a string drawn from a list returned by legalMoves.
         Illegal moves will raise an exception, which may be an array bounds
         exception.
 
-        NOTE: This function *does not* change the current object.  Instead,
+        NOTE: This function *does not* change the current object. Instead,
         it returns a new object.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        new_state = TwoJarsState((self.jars["J4"], self.jars["J3"]))
 
-    # Utilities for comparison and display
+        if move == "fillJ4":
+            new_state.jars["J4"] = 4
+        elif move == "fillJ3":
+            new_state.jars["J3"] = 3
+        elif move == "emptyJ4":
+            new_state.jars["J4"] = 0
+        elif move == "emptyJ3":
+            new_state.jars["J3"] = 0
+        elif move == "pourJ3intoJ4":
+            transfer = min(new_state.jars["J3"], 4 - new_state.jars["J4"])
+            new_state.jars["J3"] -= transfer
+            new_state.jars["J4"] += transfer
+        elif move == "pourJ4intoJ3":
+            transfer = min(new_state.jars["J4"], 3 - new_state.jars["J3"])
+            new_state.jars["J4"] -= transfer
+            new_state.jars["J3"] += transfer
+        else:
+            raise ValueError(f"Illegal move: {move}")
+
+        return new_state
+
     def __eq__(self, other):
         """
-            Overloads '==' such that two pairs of jars with the same volume of water
-          are equal.
+        Overloads '==' such that two pairs of jars with the same volume of water
+        are equal.
 
-          >>> TwoJarsState((0, 1)) == TwoJarsState((1, 0)).result('pourJ4intoJ3')
-          True
+        >>> TwoJarsState((0, 1)) == TwoJarsState((1, 0)).result('pourJ4intoJ3')
+        True
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.jars == other.jars
 
     def __hash__(self):
-        return hash(str(self.jars))
+        return hash((self.jars["J4"], self.jars["J3"]))
 
     def __getAsciiString(self):
         """
-          Returns a display string for the maze
+        Returns a display string for the jars
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return f"J4: {self.jars['J4']} | J3: {self.jars['J3']}"
 
     def __str__(self):
         return self.__getAsciiString()
-
 
 
 class TwoJarsSearchProblem(search.SearchProblem):

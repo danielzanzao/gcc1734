@@ -99,18 +99,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))"""
-    
 def depthFirstSearch(problem):
     """ DFS para encontrar um caminho até o objetivo."""
     
@@ -201,9 +189,49 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 frontier.push((successor, actions + [action], new_cost), total_cost)
 
     return []
+def iterativeDeepeningSearch(problem):
+    """
+    Perform Iterative Deepening Depth-First Search (IDS).
+
+    :param problem: The search problem instance to solve.
+    :return: A list of actions to reach the goal state.
+    """
+    def dls(node, depth, visited):
+        """
+        Perform Depth-Limited Search (DLS).
+        
+        :param node: Current node in the search tree.
+        :param depth: The current depth limit.
+        :param visited: Set of visited nodes.
+        :return: A tuple (found, actions). If found, actions is the path to the goal.
+        """
+        if problem.isGoalState(node[0]):
+            return True, node[1]  # Return the path if goal is found
+
+        if depth == 0:
+            return False, None
+
+        visited.add(node[0])
+        for child, action, _ in problem.expand(node[0]):
+            if child not in visited:
+                found, path = dls((child, node[1] + [action]), depth - 1, visited)
+                if found:
+                    return True, path
+        visited.remove(node[0])
+        return False, None
+
+    depth = 0
+    while True:
+        visited = set()
+        start_state = problem.getStartState()
+        found, path = dls((start_state, []), depth, visited)
+        if found:
+            return path
+        depth += 1
 
 
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
+ids = iterativeDeepeningSearch
