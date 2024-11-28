@@ -581,10 +581,10 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
-        # Define o problema para encontrar qualquer ponto de comida
+     
         problem = AnyFoodSearchProblem(gameState)
 
-        # Usa busca em largura para encontrar o caminho até o ponto mais próximo
+
         return search.bfs(problem)
 
 
@@ -621,7 +621,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-        # O estado é objetivo se há comida na posição atual
+        
         return self.food[x][y]
 
 

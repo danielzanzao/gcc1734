@@ -131,22 +131,22 @@ def breadthFirstSearch(problem):
 
     # Inicializa a fronteira com o estado inicial e o caminho vazio
     frontier = Queue()
-    frontier.push((problem.getStartState(), []))  # (estado, ações para chegar ao estado)
+    frontier.push((problem.getStartState(), [])) 
 
-    visited = set()  # Conjunto para rastrear estados visitados
+    visited = set()  
 
     while not frontier.isEmpty():
         current_state, actions = frontier.pop()
 
-        # Verifica se o estado atual é o objetivo
+        
         if problem.isGoalState(current_state):
             return actions
 
-        # Se ainda não visitado, expande o estado
+        
         if current_state not in visited:
             visited.add(current_state)
 
-            # Use expand para obter os sucessores
+    
             for successor, action, cost in problem.expand(current_state):
                 if successor not in visited:
                     frontier.push((successor, actions + [action]))
@@ -162,27 +162,27 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    from util import PriorityQueue  # Usa fila de prioridade para gerenciar a fronteira
+    from util import PriorityQueue  
 
-    # Inicializa a fronteira com o estado inicial, caminho vazio, e custo acumulado
+    
     frontier = PriorityQueue()
     start_state = problem.getStartState()
     frontier.push((start_state, [], 0), heuristic(start_state, problem))
 
-    visited = {}  # Dicionário para rastrear estados visitados e o menor custo
+    visited = {}  
 
     while not frontier.isEmpty():
         current_state, actions, g_cost = frontier.pop()
 
-        # Verifica se é o estado objetivo
+       
         if problem.isGoalState(current_state):
             return actions
 
-        # Checa se o estado já foi expandido com menor custo
+        
         if current_state not in visited or g_cost < visited[current_state]:
             visited[current_state] = g_cost
 
-            # Expande os sucessores do estado atual
+           
             for successor, action, step_cost in problem.expand(current_state):
                 new_cost = g_cost + step_cost
                 total_cost = new_cost + heuristic(successor, problem)
@@ -190,23 +190,11 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     return []
 def iterativeDeepeningSearch(problem):
-    """
-    Perform Iterative Deepening Depth-First Search (IDS).
 
-    :param problem: The search problem instance to solve.
-    :return: A list of actions to reach the goal state.
-    """
     def dls(node, depth, visited):
-        """
-        Perform Depth-Limited Search (DLS).
         
-        :param node: Current node in the search tree.
-        :param depth: The current depth limit.
-        :param visited: Set of visited nodes.
-        :return: A tuple (found, actions). If found, actions is the path to the goal.
-        """
         if problem.isGoalState(node[0]):
-            return True, node[1]  # Return the path if goal is found
+            return True, node[1] 
 
         if depth == 0:
             return False, None
